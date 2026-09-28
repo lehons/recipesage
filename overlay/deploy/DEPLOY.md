@@ -129,13 +129,19 @@ The app's `service-worker.js` caches `/app/index.html` and fetches it network-fi
 navigation, using the browser's HTTP cache. Because the overlay rewrites the HTML, upstream
 `ETag`/`Last-Modified` validators describe the un-injected file. A revalidation would get a 304
 from upstream and keep the old copy without the overlay tags. That is what happened on first
-deploy (2026-09-28). `nginx.conf` therefore strips `If-None-Match`/`If-Modified-Since` on the app
-HTML routes (the `$rso_is_html` map). Filtered responses carry no `ETag`/`Last-Modified`, so
-browsers refetch them instead of revalidating.
+deploy (2026-09-28). On the app HTML routes, `nginx.conf` therefore:
+
+- strips `If-None-Match`/`If-Modified-Since` going upstream (the `$rso_is_html` map), and
+- hides upstream `ETag`/`Last-Modified` (the HTML `location` blocks). The overlay nginx's own
+  not-modified check compares the browser's validators against those headers before the
+  rewrite, so passing them through also produces 304s.
+
+The browser then has no validators to send, and always gets the full injected page.
 
 - The first load after a change may still show the old HTML. The service worker refreshes its copy
   in the background, so the next load (or reopening the app) has it.
-- If the app ever serves HTML from a new path, add it to the `$rso_is_html` map.
+- If the app ever serves HTML from a new path, add it to the `$rso_is_html` map **and** give it a
+  `location` with the two `proxy_hide_header` lines.
 - Changes to `overlay.js` and `overlay.css` are not affected; they're fetched with `no-cache`.
 - Side effect: the base stack's `custom.css` injection (on `/` only) had the same problem, so
   service-worker clients weren't getting it. Phase 2 moves that injection here.

@@ -1,0 +1,31 @@
+# Overlay proxy for recipesage.sherbot.cloud. See DEPLOY.md.
+# Sits in front of the untouched recipesage_proxy via a higher-priority
+# Traefik router. Stopping this stack routes traffic straight back.
+
+services:
+  overlay-proxy:
+    container_name: recipesage_overlay
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../inject:/usr/share/nginx/html/overlay/inject:ro
+      - ${OVERLAY_CONFIG:-/docker/recipesage-overlay/config.json}:/usr/share/nginx/html/overlay/config.json:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.recipesage-overlay.rule=Host(`recipesage.sherbot.cloud`)
+      - traefik.http.routers.recipesage-overlay.priority=1000
+      - traefik.http.routers.recipesage-overlay.entrypoints=websecure
+      - traefik.http.routers.recipesage-overlay.tls.certresolver=letsencrypt
+      - traefik.http.routers.recipesage-overlay.service=recipesage-overlay
+      - traefik.http.services.recipesage-overlay.loadbalancer.server.port=80
+      - traefik.docker.network=proxy
+    networks:
+      - proxy
+      - recipesage_default
+
+networks:
+  proxy:
+    external: true
+  recipesage_default:
+    external: true

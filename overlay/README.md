@@ -12,12 +12,12 @@ overlay/
   deploy/        Traefik labels + nginx sub_filter snippet for the VPS stack
 ```
 
-Nothing is built yet. Folders are created when their first feature is accepted.
+Built: `inject/` (bottom bar), `deploy/` (overlay proxy + `DEPLOY.md`). Not yet built: `quick-add/`.
 
 ## Deployment model
 
 ```
-Traefik ──► overlay-proxy (nginx: sub_filter injects <script src="/overlay/inject/overlay.js">)
+Traefik ──► recipesage_overlay (nginx: sub_filter injects overlay.css + overlay.js)
                ├─ /overlay/*  → overlay static files
                └─ everything else → recipesage_proxy (official image, untouched)
 ```

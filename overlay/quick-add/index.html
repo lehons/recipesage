@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0"
+    />
+    <title>Quick add - RecipeSage</title>
+    <link rel="stylesheet" href="/overlay/quick-add/quick-add.css" />
+    <script type="module" src="/overlay/quick-add/quick-add.js"></script>
+    <!-- The overlay proxy injects the bottom bar tags before </head>. -->
+  </head>
+  <body>
+    <header class="toolbar">
+      <h1>Quick add</h1>
+      <span class="list-title" id="list-title"></span>
+    </header>
+
+    <main>
+      <form id="add-form" autocomplete="off">
+        <input
+          id="item-input"
+          type="text"
+          placeholder="Add an item"
+          aria-label="Item to add"
+          aria-autocomplete="list"
+          aria-controls="suggestions"
+          autocapitalize="sentences"
+          enterkeyhint="send"
+          maxlength="254"
+          autofocus
+        />
+        <button type="submit" id="add-button" aria-label="Add">Add</button>
+      </form>
+
+      <ul id="suggestions" class="suggestions" role="listbox" hidden></ul>
+
+      <section id="usual" class="usual" hidden>
+        <h2>Usual items</h2>
+        <div id="usual-chips" class="chips"></div>
+      </section>
+
+      <section id="added" class="added" hidden>
+        <h2>Added</h2>
+        <ul id="added-list"></ul>
+      </section>
+
+      <p id="message" class="message" hidden></p>
+    </main>
+  </body>
+</html>

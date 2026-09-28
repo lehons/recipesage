@@ -1,0 +1,237 @@
+/* Quick-add page. Not an Ionic page, so it defines the Ionic colour
+   variables itself; the injected bottom bar picks them up too. */
+
+:root {
+  --ion-color-primary: #00a8ff;
+  --ion-color-medium: #92949c;
+  --ion-color-danger: #eb445a;
+  --ion-background-color: #ffffff;
+  --ion-toolbar-background: #f8f8f8;
+  --ion-border-color: rgba(0, 0, 0, 0.12);
+  --rso-text: #222428;
+  --rso-muted: #6b6e76;
+  --rso-surface: #f4f5f8;
+  --rso-header-bg: #3a3a3c;
+  --rso-header-text: #ffffff;
+  --rso-ok: #2dd36f;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: #121212;
+    --ion-toolbar-background: #1f1f1f;
+    --ion-border-color: rgba(255, 255, 255, 0.14);
+    --rso-text: #f2f2f2;
+    --rso-muted: #a0a3aa;
+    --rso-surface: #1e1e1e;
+    --rso-header-bg: #1f1f1f;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding-bottom: calc(var(--rso-bar-total, 0px) + 16px);
+  background: var(--ion-background-color);
+  color: var(--rso-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+.toolbar {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: calc(env(safe-area-inset-top, 0px) + 14px) 16px 14px;
+  background: var(--rso-header-bg);
+  color: var(--rso-header-text);
+}
+
+.toolbar h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.list-title {
+  opacity: 0.7;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+#add-form {
+  display: flex;
+  gap: 8px;
+}
+
+#item-input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--ion-border-color);
+  border-radius: 10px;
+  background: var(--rso-surface);
+  color: var(--rso-text);
+  font: inherit;
+  font-size: 17px;
+}
+
+#item-input:focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: -1px;
+}
+
+#add-button {
+  height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--ion-color-primary);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#add-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.suggestions {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--ion-border-color);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.suggestions li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--ion-border-color);
+  cursor: pointer;
+}
+
+.suggestions li:first-child {
+  border-top: 0;
+}
+
+.suggestions li[aria-selected="true"] {
+  background: var(--rso-surface);
+}
+
+.suggestions .title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.suggestions mark {
+  background: none;
+  color: inherit;
+  font-weight: 700;
+}
+
+.tag {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--rso-surface);
+  color: var(--rso-muted);
+  font-size: 12px;
+}
+
+h2 {
+  margin: 24px 0 10px;
+  color: var(--rso-muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chips button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--ion-border-color);
+  border-radius: 20px;
+  background: var(--rso-surface);
+  color: var(--rso-text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.added ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.added li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ion-border-color);
+}
+
+.added .status {
+  flex: none;
+  width: 20px;
+  text-align: center;
+  color: var(--rso-muted);
+}
+
+.added li.ok .status {
+  color: var(--rso-ok);
+}
+
+.added li.failed .status {
+  color: var(--ion-color-danger);
+}
+
+.added li.failed button {
+  margin-left: auto;
+  border: 0;
+  background: none;
+  color: var(--ion-color-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.message {
+  margin-top: 24px;
+  color: var(--rso-muted);
+}
+
+.message a {
+  color: var(--ion-color-primary);
+}

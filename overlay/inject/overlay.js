@@ -68,12 +68,16 @@ function buildTabs(config) {
 
 // Navigate inside the Angular app without a full reload: push the URL, then
 // fire popstate so the router picks it up. Anything outside /app/ loads normally.
+// Same page with a different query (Recipes <-> Weekly) also loads normally:
+// upstream pages read query params only on ionViewWillEnter, which doesn't
+// fire when the page is reused. Needs the proxy's deep-link fallback.
 function navigate(href) {
-  if (!href.startsWith("/app/")) {
+  if (location.pathname + location.search === href) return;
+  const target = new URL(href, location.origin);
+  if (!href.startsWith("/app/") || target.pathname === location.pathname) {
     window.location.assign(href);
     return;
   }
-  if (location.pathname + location.search === href) return;
   history.pushState(history.state, "", href);
   window.dispatchEvent(new PopStateEvent("popstate", { state: history.state }));
 }

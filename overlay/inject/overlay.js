@@ -3,7 +3,11 @@
 // isn't hidden behind the bar), Ionic CSS variables for colours, and Angular's
 // router reacting to popstate. No upstream components or private DOM.
 
-import { getUncheckedItemCount, isLoggedIn } from "./api.js";
+import {
+  SHOPPING_LIST_CHANGED_EVENT,
+  getUncheckedItemCount,
+  isLoggedIn,
+} from "./api.js";
 
 const CONFIG_URL = "/overlay/config.json";
 const BAR_ID = "rso-bottom-bar";
@@ -164,6 +168,7 @@ function startBadge(nav, config) {
   refresh();
   setInterval(refresh, (config.badgeRefreshSeconds || 30) * 1000);
   document.addEventListener("visibilitychange", refresh);
+  window.addEventListener(SHOPPING_LIST_CHANGED_EVENT, refreshSoon);
   // Checking items off on the list page changes the count; catch it quickly.
   document.addEventListener("click", () => {
     if (location.pathname.startsWith("/app/shopping-lists/")) refreshSoon();

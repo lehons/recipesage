@@ -85,9 +85,16 @@ export async function getUncheckedItemCount(shoppingListId) {
 // change to other open clients.
 export const ITEM_TITLE_MAX_LENGTH = 254;
 
+// Fired on window after the overlay changes a list, so the bottom bar badge
+// can refresh without waiting for its poll.
+export const SHOPPING_LIST_CHANGED_EVENT = "rso:shopping-list-changed";
+
 export async function addShoppingListItems(shoppingListId, titles) {
   await trpcMutation("shoppingLists.createShoppingListItems", {
     shoppingListId,
     items: titles.map((title) => ({ title, recipeId: null })),
   });
+  window.dispatchEvent(
+    new CustomEvent(SHOPPING_LIST_CHANGED_EVENT, { detail: { shoppingListId } }),
+  );
 }

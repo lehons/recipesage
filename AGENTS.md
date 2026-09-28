@@ -24,7 +24,7 @@ Every customization must survive upstream updates with zero or trivial merge eff
 
 If a request is T3, or a T1/T2 build starts needing upstream internals (Angular components, private DOM structure, DB access), stop and push back to Liohn before writing code. Being conservative is the requirement, not a preference.
 
-## Integration points (verified against upstream 2026-09-28, v4.0.13)
+## Integration points (verified 2026-09-28: upstream source v4.0.13, live instance v4.0.7)
 
 - Frontend is served under `/app/`, path-based routes (no hash):
   - Meal plan: `/app/meal-planners/<mealPlanId>`

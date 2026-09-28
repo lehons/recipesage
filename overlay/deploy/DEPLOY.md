@@ -6,13 +6,17 @@ update this file in the same session.
 ## Topology
 
 ```
-Traefik ──(router recipesage-overlay, priority 1000)──► recipesage_overlay (nginx, this repo)
+Traefik ──(router recipesage-overlay, priority 50)────► recipesage_overlay (nginx, this repo)
                                                           ├─ /overlay/*  → bind-mounted overlay files
                                                           ├─ /app/<route> 404 → app index (deep-link fallback)
                                                           └─ everything else → recipesage_proxy (unchanged)
 Traefik ──(router recipesage, default priority)─────────► recipesage_proxy   (fallback when overlay is down)
 ```
 
+- Router priorities on this host: `recipesage-mcp` + `recipesage-mcp-oauth` (`/mcp`, OAuth paths) = 100,
+  overlay = 50, base `recipesage` = default (rule length, 32). The overlay must stay between them,
+  or it swallows the MCP server's routes (happened on first deploy with priority 1000).
+  Verification includes an MCP route check.
 - The base stack in `/docker/recipesage/` is not touched by this deploy. Its Traefik router stays in
   place, so stopping the overlay stack sends traffic straight back to it.
 - HTML responses get two tags injected before `</head>`: `overlay.css` and `overlay.js` (ES module).
@@ -77,6 +81,8 @@ the mounted copy. A mounted copy means upstream proxy changes don't apply.
    curl -s $H/app/list/main | grep -c 'overlay/inject/overlay.js'             # 1
    curl -s -o /dev/null -w '%{http_code}\n' $H/api/trpc/shoppingLists.getShoppingListItems   # 401
    curl -s $H/ | grep -c 'custom.css'                                         # 1 (base stack injection still works)
+   curl -s -o /dev/null -w '%{http_code}
+' $H/.well-known/oauth-authorization-server   # 200 (MCP stack, not overlay)
    docker logs --tail 20 recipesage_overlay
    ```
    In a browser (logged in): the bar shows on every page, and the Shopping badge matches the

@@ -17,7 +17,9 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.recipesage-overlay.rule=Host(`recipesage.sherbot.cloud`)
-      - traefik.http.routers.recipesage-overlay.priority=1000
+      # Must beat the base router (default priority = rule length, 32) but stay
+      # below recipesage_mcp's /mcp and OAuth routers (priority 100).
+      - traefik.http.routers.recipesage-overlay.priority=50
       - traefik.http.routers.recipesage-overlay.entrypoints=websecure
       - traefik.http.routers.recipesage-overlay.tls.certresolver=letsencrypt
       - traefik.http.routers.recipesage-overlay.service=recipesage-overlay

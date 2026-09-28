@@ -92,9 +92,12 @@ git -C repo pull --ff-only
 ```
 
 - `inject/*` changes are live immediately (bind mount). Browsers revalidate (`no-cache`).
-- `nginx.conf` changed: validate (step 3 above), then `docker exec recipesage_overlay nginx -s reload`.
+- `nginx.conf` changed: `docker exec recipesage_overlay nginx -t && docker exec recipesage_overlay nginx -s reload`.
 - `docker-compose.yml` changed: `$DC up -d`.
-- `config.json` changed: live immediately, nothing to restart.
+- `config.json` changed: live immediately if edited in place (`nano`, `cp` over it). If a tool
+  replaces the file (new inode), the single-file mount keeps the old content: `$DC up -d --force-recreate`.
+- `deploy/` is mounted as a directory so `nginx.conf` changes from `git pull` are visible to
+  the container. Always run `nginx -t` inside the container before reloading.
 
 ## After an upstream RecipeSage upgrade
 

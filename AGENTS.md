@@ -36,6 +36,16 @@ If a request is T3, or a T1/T2 build starts needing upstream internals (Angular 
 - Selfhost stack: a `recipesage_proxy` nginx container fronts `static` and `api`. Script injection and `/overlay/` routing are done in front of that proxy (Traefik route + small nginx with `sub_filter`), never by altering upstream images.
 - "Default" meal plan / shopping list / label do not exist upstream. They are IDs in overlay config.
 
+## Deployment must be repeatable
+
+- Every deploy step for the VPS lives in `overlay/deploy/DEPLOY.md` (deploy, update after upstream upgrade, roll back), plus the compose/Traefik/nginx files it references in `overlay/deploy/`.
+- If you change anything on the server by hand, update `DEPLOY.md` in the same session. A deploy that only exists in shell history is not done.
+- No secrets or real IDs in git. Real config goes in `overlay/config.json` (gitignored); `config.example.json` shows the shape.
+
+## Tracking
+
+Feature requests and triage: Asana project "RecipeSage fork" (GID `1218954036218771`). Tier prefix in task names (`[T0]`–`[T3]`). Reference the Asana task in commit messages.
+
 ## Branches
 
 - `master` — pure mirror of upstream. Never commit here. Update with GitHub "Sync fork".

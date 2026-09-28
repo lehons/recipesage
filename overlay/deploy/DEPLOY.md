@@ -123,9 +123,18 @@ without it.
   docker exec recipesage_overlay nginx -s reload
   ```
 
-## Service worker note
+## Service worker and HTML caching
 
-The app registers `service-worker.js`, which may cache `index.html`. After changing the injected
-tags in `nginx.conf` (not the files they point to), a client may keep the old HTML until the service
-worker updates. Fix it with a hard refresh or by reopening the app. Changes to `overlay.js` and
-`overlay.css` are not affected.
+The app's `service-worker.js` caches `/app/index.html` and fetches it network-first on each
+navigation, using the browser's HTTP cache. Because the overlay rewrites the HTML, upstream
+`ETag`/`Last-Modified` validators describe the un-injected file. A revalidation would get a 304
+from upstream and keep the old copy without the overlay tags. That is what happened on first
+deploy (2026-09-28). `nginx.conf` therefore strips `If-None-Match`/`If-Modified-Since` and sends
+`Cache-Control: no-cache` on the app HTML routes (the `$rso_is_html` map).
+
+- The first load after a change may still show the old HTML. The service worker refreshes its copy
+  in the background, so the next load (or reopening the app) has it.
+- If the app ever serves HTML from a new path, add it to the `$rso_is_html` map.
+- Changes to `overlay.js` and `overlay.css` are not affected; they're fetched with `no-cache`.
+- Side effect: the base stack's `custom.css` injection (on `/` only) had the same problem, so
+  service-worker clients weren't getting it. Phase 2 moves that injection here.

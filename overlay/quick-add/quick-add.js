@@ -1,5 +1,5 @@
 // Quick-add page (T2): type an item, Enter adds it to the configured
-// shopping list. Suggestions come from the list's current items (checked or
+// shopping list. Suggestions come from the list's hand-added items (checked or
 // not) plus this device's quick-add history (localStorage). All API calls go
 // through the shared overlay API module.
 
@@ -22,7 +22,7 @@ const addButton = $("add-button");
 const suggestionsEl = $("suggestions");
 
 let config;
-// key -> { title, unchecked, onList } from the shopping list
+// key -> { title, unchecked } from the shopping list (hand-added items only)
 let listItems = new Map();
 // key -> { title, count, last } added from this device
 let history = loadHistory();
@@ -72,6 +72,9 @@ async function refreshList() {
   if (!items) return;
   const next = new Map();
   for (const item of items) {
+    // Lines added from a recipe ("19 oz can of white beans (see note 1)")
+    // make poor suggestions; only learn from items typed in by hand.
+    if (item.recipeId) continue;
     const key = keyOf(item.title);
     const existing = next.get(key);
     next.set(key, {

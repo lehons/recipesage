@@ -18,32 +18,40 @@
     </header>
 
     <main>
-      <form id="add-form" autocomplete="off">
-        <input
-          id="item-input"
-          type="text"
-          placeholder="Add an item"
-          aria-label="Item to add"
-          aria-autocomplete="list"
-          aria-controls="suggestions"
-          autocapitalize="sentences"
-          enterkeyhint="send"
-          maxlength="254"
-          autofocus
-        />
-        <button type="submit" id="add-button" aria-label="Add">Add</button>
-      </form>
-
-      <ul id="suggestions" class="suggestions" role="listbox" hidden></ul>
+      <div class="add-area">
+        <form id="add-form" autocomplete="off">
+          <input
+            id="item-input"
+            type="text"
+            placeholder="Add an item"
+            aria-label="Item to add"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-controls="suggestions"
+            aria-expanded="false"
+            autocapitalize="sentences"
+            enterkeyhint="enter"
+            maxlength="254"
+            autofocus
+          />
+          <button type="submit" id="add-button" aria-label="Add">Add</button>
+        </form>
+        <ul id="suggestions" class="dropdown" role="listbox" hidden></ul>
+      </div>
 
       <section id="usual" class="usual" hidden>
         <h2>Usual items</h2>
         <div id="usual-chips" class="chips"></div>
       </section>
 
-      <section id="added" class="added" hidden>
-        <h2>Added</h2>
-        <ul id="added-list"></ul>
+      <section class="list">
+        <h2>
+          <span id="list-heading">Shopping list</span>
+          <span id="list-count" class="count"></span>
+          <a id="list-link" class="open-list" href="#">Open list</a>
+        </h2>
+        <div id="list-items"></div>
+        <p id="list-empty" class="empty" hidden>Nothing on the list.</p>
       </section>
 
       <p id="message" class="message" hidden></p>

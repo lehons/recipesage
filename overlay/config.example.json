@@ -1,6 +1,7 @@
 {
   "mealPlanId": "00000000-0000-0000-0000-000000000000",
   "shoppingListId": "00000000-0000-0000-0000-000000000000",
+  "favoritesListId": "00000000-0000-0000-0000-000000000000",
   "weeklyDefaultsLabel": "weekly defaults",
   "quickAddEnabled": false,
   "badgeRefreshSeconds": 30

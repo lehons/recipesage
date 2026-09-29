@@ -156,5 +156,12 @@ The browser then has no validators to send, and always gets the full injected pa
 - If the app ever serves HTML from a new path, add it to the `$rso_is_html` map **and** give it a
   `location` with the two `proxy_hide_header` lines.
 - Changes to `overlay.js` and `overlay.css` are not affected; they're fetched with `no-cache`.
+- **Overlay pages outside `/app/` (e.g. `/overlay/quick-add/`) are cached by the service worker**
+  as stale-while-revalidate (its `astro-pages` cache, meant for upstream's marketing pages). The first
+  load after a deploy shows the previous version; the next load has the new one. `api-cache`
+  (network-first) also matches `/overlay/inject/api.js` because its rule matches `/api` anywhere
+  in the URL. That's harmless because network-first always tries the server.
+- `sub_filter` replaces only the first `</head>` in a response. Never write that tag inside an
+  HTML comment in overlay pages (the quick-add page's bar went into its comment on first deploy).
 - Side effect: the base stack's `custom.css` injection (on `/` only) had the same problem, so
   service-worker clients weren't getting it. Phase 2 moves that injection here.

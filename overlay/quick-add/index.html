@@ -9,7 +9,8 @@
     <title>Quick add - RecipeSage</title>
     <link rel="stylesheet" href="/overlay/quick-add/quick-add.css" />
     <script type="module" src="/overlay/quick-add/quick-add.js"></script>
-    <!-- The overlay proxy injects the bottom bar tags before </head>. -->
+    <!-- The overlay proxy injects the bottom bar tags at the end of head. Do not
+         write the closing head tag in a comment: sub_filter replaces the first match. -->
   </head>
   <body>
     <header class="toolbar">

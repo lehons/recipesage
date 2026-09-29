@@ -1,0 +1,307 @@
+/* Quick-add page. Not an Ionic page, so it defines the Ionic colour
+   variables itself; the injected bottom bar picks them up too. */
+
+:root {
+  --ion-color-primary: #00a8ff;
+  --ion-color-medium: #92949c;
+  --ion-color-danger: #eb445a;
+  --ion-background-color: #ffffff;
+  --ion-toolbar-background: #f8f8f8;
+  --ion-border-color: rgba(0, 0, 0, 0.12);
+  --rso-text: #222428;
+  --rso-muted: #6b6e76;
+  --rso-surface: #f4f5f8;
+  --rso-header-bg: #3a3a3c;
+  --rso-header-text: #ffffff;
+  --rso-ok: #2dd36f;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: #121212;
+    --ion-toolbar-background: #1f1f1f;
+    --ion-border-color: rgba(255, 255, 255, 0.14);
+    --rso-text: #f2f2f2;
+    --rso-muted: #a0a3aa;
+    --rso-surface: #1e1e1e;
+    --rso-header-bg: #1f1f1f;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding-bottom: calc(var(--rso-bar-total, 0px) + 16px);
+  background: var(--ion-background-color);
+  color: var(--rso-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+.toolbar {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: calc(env(safe-area-inset-top, 0px) + 14px) 16px 14px;
+  background: var(--rso-header-bg);
+  color: var(--rso-header-text);
+}
+
+.toolbar h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.list-title {
+  opacity: 0.7;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+#add-form {
+  display: flex;
+  gap: 8px;
+}
+
+#item-input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--ion-border-color);
+  border-radius: 10px;
+  background: var(--rso-surface);
+  color: var(--rso-text);
+  font: inherit;
+  font-size: 17px;
+}
+
+#item-input:focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: -1px;
+}
+
+#add-button {
+  height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--ion-color-primary);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#add-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Suggestions drop down over the page, anchored under the input. */
+.add-area {
+  position: relative;
+  z-index: 5;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 60vh;
+  margin: 0;
+  padding: 4px 0;
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid var(--ion-border-color);
+  border-radius: 10px;
+  background: var(--ion-background-color);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.dropdown li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 4px 0 14px;
+  cursor: pointer;
+}
+
+.dropdown li[aria-selected="true"],
+.dropdown li:hover {
+  background: var(--rso-surface);
+}
+
+.dropdown .title {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 0;
+  overflow-wrap: anywhere;
+}
+
+.dropdown mark {
+  background: none;
+  color: inherit;
+  font-weight: 700;
+}
+
+.dropdown .dismiss {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: none;
+  color: var(--rso-muted);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.tag {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--rso-surface);
+  color: var(--rso-muted);
+  font-size: 12px;
+}
+
+h2 {
+  margin: 24px 0 10px;
+  color: var(--rso-muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chips button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--ion-border-color);
+  border-radius: 20px;
+  background: var(--rso-surface);
+  color: var(--rso-text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.list h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.list .count {
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: var(--rso-surface);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.list .count:empty {
+  display: none;
+}
+
+.open-list {
+  margin-left: auto;
+  color: var(--ion-color-primary);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-decoration: none;
+  text-transform: none;
+}
+
+.list h3 {
+  margin: 16px 0 4px;
+  color: var(--ion-color-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--ion-border-color);
+}
+
+.list li .title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.list li .from {
+  flex-basis: 100%;
+  color: var(--rso-muted);
+  font-size: 13px;
+}
+
+.list li.pending .status {
+  color: var(--rso-muted);
+  font-size: 14px;
+}
+
+.list li.pending.saved .status {
+  color: var(--rso-ok);
+}
+
+.list li.pending.failed .status {
+  color: var(--ion-color-danger);
+}
+
+.list li.pending button {
+  border: 0;
+  background: none;
+  color: var(--ion-color-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.empty {
+  color: var(--rso-muted);
+}
+
+.message {
+  margin-top: 24px;
+  color: var(--rso-muted);
+}
+
+.message a {
+  color: var(--ion-color-primary);
+}

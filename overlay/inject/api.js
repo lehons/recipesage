@@ -1,6 +1,7 @@
-// Every RecipeSage API call the injected overlay makes lives here.
-// tRPC is internal to upstream (not a public contract): if an upgrade breaks
-// the badge, this is the one file to fix. Verified against upstream v4.0.13.
+// Every RecipeSage API call the overlay makes lives here (bottom bar and
+// quick-add page). tRPC is internal to upstream (not a public contract): if an
+// upgrade breaks the badge or quick-add, this is the one file to fix.
+// Verified against upstream source v4.0.13 and live v4.0.7.
 
 const API_BASE = "/api/";
 
@@ -38,12 +39,62 @@ async function trpcQuery(procedure, input) {
   return body?.result?.data ?? null;
 }
 
-// Number of unchecked items on a shopping list, or null if unavailable.
-// Counts raw items, not the grouped rows the upstream list page displays.
-export async function getUncheckedItemCount(shoppingListId) {
+// tRPC mutation: POST with the plain JSON input as the body. Throws on
+// failure so callers can keep what the user typed.
+async function trpcMutation(procedure, input) {
+  const token = getToken();
+  if (!token) throw new Error("Not logged in");
+
+  const res = await fetch(API_BASE + "trpc/" + procedure, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error(`${procedure} failed (${res.status})`);
+
+  const body = await res.json();
+  return body?.result?.data ?? null;
+}
+
+// Items on a shopping list ({ title, completed, ... }), or null if unavailable.
+export async function getShoppingListItems(shoppingListId) {
   const items = await trpcQuery("shoppingLists.getShoppingListItems", {
     shoppingListId,
   });
-  if (!Array.isArray(items)) return null;
+  return Array.isArray(items) ? items : null;
+}
+
+// Shopping list title, or null if unavailable.
+export async function getShoppingListTitle(id) {
+  const list = await trpcQuery("shoppingLists.getShoppingList", { id });
+  return list?.title ?? null;
+}
+
+// Number of unchecked items on a shopping list, or null if unavailable.
+// Counts raw items, not the grouped rows the upstream list page displays.
+export async function getUncheckedItemCount(shoppingListId) {
+  const items = await getShoppingListItems(shoppingListId);
+  if (!items) return null;
   return items.filter((item) => !item.completed).length;
+}
+
+// Adds items by title. The server assigns the aisle category and pushes the
+// change to other open clients.
+export const ITEM_TITLE_MAX_LENGTH = 254;
+
+// Fired on window after the overlay changes a list, so the bottom bar badge
+// can refresh without waiting for its poll.
+export const SHOPPING_LIST_CHANGED_EVENT = "rso:shopping-list-changed";
+
+export async function addShoppingListItems(shoppingListId, titles) {
+  await trpcMutation("shoppingLists.createShoppingListItems", {
+    shoppingListId,
+    items: titles.map((title) => ({ title, recipeId: null })),
+  });
+  window.dispatchEvent(
+    new CustomEvent(SHOPPING_LIST_CHANGED_EVENT, { detail: { shoppingListId } }),
+  );
 }

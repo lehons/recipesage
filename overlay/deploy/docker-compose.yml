@@ -13,6 +13,7 @@ services:
       # Only *.conf in this directory is loaded (nginx.conf).
       - .:/etc/nginx/conf.d:ro
       - ../inject:/usr/share/nginx/html/overlay/inject:ro
+      - ../quick-add:/usr/share/nginx/html/overlay/quick-add:ro
       - ${OVERLAY_CONFIG:-/docker/recipesage-overlay/config.json}:/usr/share/nginx/html/overlay/config.json:ro
     labels:
       - traefik.enable=true

@@ -3,7 +3,11 @@
 // isn't hidden behind the bar), Ionic CSS variables for colours, and Angular's
 // router reacting to popstate. No upstream components or private DOM.
 
-import { getUncheckedItemCount, isLoggedIn } from "./api.js";
+import {
+  SHOPPING_LIST_CHANGED_EVENT,
+  getUncheckedItemCount,
+  isLoggedIn,
+} from "./api.js";
 
 const CONFIG_URL = "/overlay/config.json";
 const BAR_ID = "rso-bottom-bar";
@@ -67,14 +71,20 @@ function buildTabs(config) {
 }
 
 // Navigate inside the Angular app without a full reload: push the URL, then
-// fire popstate so the router picks it up. Anything outside /app/ loads normally.
+// fire popstate so the router picks it up. Links to or from pages outside
+// /app/ (e.g. the quick-add page) load normally.
 // Same page with a different query (Recipes <-> Weekly) also loads normally:
 // upstream pages read query params only on ionViewWillEnter, which doesn't
 // fire when the page is reused. Needs the proxy's deep-link fallback.
 function navigate(href) {
   if (location.pathname + location.search === href) return;
   const target = new URL(href, location.origin);
-  if (!href.startsWith("/app/") || target.pathname === location.pathname) {
+  const inApp = location.pathname.startsWith("/app/");
+  if (
+    !inApp ||
+    !href.startsWith("/app/") ||
+    target.pathname === location.pathname
+  ) {
     window.location.assign(href);
     return;
   }
@@ -158,6 +168,7 @@ function startBadge(nav, config) {
   refresh();
   setInterval(refresh, (config.badgeRefreshSeconds || 30) * 1000);
   document.addEventListener("visibilitychange", refresh);
+  window.addEventListener(SHOPPING_LIST_CHANGED_EVENT, refreshSoon);
   // Checking items off on the list page changes the count; catch it quickly.
   document.addEventListener("click", () => {
     if (location.pathname.startsWith("/app/shopping-lists/")) refreshSoon();

@@ -12,7 +12,7 @@ overlay/
   deploy/        Traefik labels + nginx sub_filter snippet for the VPS stack
 ```
 
-Built: `inject/` (bottom bar), `deploy/` (overlay proxy + `DEPLOY.md`). Not yet built: `quick-add/`.
+Built: `inject/` (bottom bar + shared `api.js`), `quick-add/` (quick-add page), `deploy/` (overlay proxy + `DEPLOY.md`).
 
 ## Deployment model
 

@@ -60,7 +60,7 @@ the mounted copy. A mounted copy means upstream proxy changes don't apply.
 2. Create the real config from the example and fill in the IDs:
    ```bash
    cp repo/overlay/config.example.json config.json
-   nano config.json   # mealPlanId, shoppingListId, weeklyDefaultsLabel
+   nano config.json   # mealPlanId, shoppingListId, weeklyDefaultsLabel, quickAddEnabled
    chmod 644 config.json
    ```
 3. Validate the nginx config before routing any traffic to it:
@@ -80,9 +80,11 @@ the mounted copy. A mounted copy means upstream proxy changes don't apply.
    curl -s -o /dev/null -w '%{http_code}\n' $H/app/list/main                  # 200 (was 404)
    curl -s $H/app/list/main | grep -c 'overlay/inject/overlay.js'             # 1
    curl -s -o /dev/null -w '%{http_code}\n' $H/api/trpc/shoppingLists.getShoppingListItems   # 401
+   curl -s -o /dev/null -w '%{http_code}\n' $H/overlay/quick-add/             # 200
+   curl -s $H/overlay/quick-add/ | grep -c 'overlay/inject/overlay.js'        # 1 (bar injected)
    curl -s $H/ | grep -c 'custom.css'                                         # 1 (base stack injection still works)
-   curl -s -o /dev/null -w '%{http_code}
-' $H/.well-known/oauth-authorization-server   # 200 (MCP stack, not overlay)
+   curl -s -o /dev/null -w '%{http_code}\n' $H/.well-known/oauth-authorization-server   # 200 (MCP stack, not overlay)
+   curl -s -X POST $H/mcp | head -c 80; echo                                  # MCP's own JSON 401, not an nginx page
    docker logs --tail 20 recipesage_overlay
    ```
    In a browser (logged in): the bar shows on every page, and the Shopping badge matches the
@@ -113,6 +115,8 @@ Run the verification block from step 5, then check the integration points listed
 - `localStorage["token"]` still holds the session token (DevTools → Application).
 - `shoppingLists.getShoppingListItems` still exists: the badge shows a number. If the badge
   disappears, fix `overlay/inject/api.js`, which is the only file that calls the API.
+- Quick add still works: add an item at `/overlay/quick-add/`, confirm it shows on the list, then
+  delete it (`shoppingLists.createShoppingListItems`, `shoppingLists.getShoppingList`).
 - `<ion-app>` still the app shell: page content ends above the bar instead of behind it.
 - `index.html` still has a `</head>` for `sub_filter` to hook.
 
